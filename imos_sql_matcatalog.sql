@@ -1,0 +1,40 @@
+WITH cte AS
+(
+  SELECT 
+    DIR_ID, 
+    NAME,
+    TYPE,
+    PARENT_ID
+    --CAST(0 AS varbinary(max)) AS Level
+  FROM MATFOLDER
+  WHERE PARENT_ID = 4397
+  UNION ALL
+  SELECT 
+    i.DIR_ID, 
+    i.NAME,
+    i.TYPE,
+    i.PARENT_ID  
+    --Level + CAST(i.DIR_ID AS varbinary(max)) AS Level
+  FROM MATFOLDER i
+  INNER JOIN cte c
+    ON c.DIR_ID = i.PARENT_ID
+)
+
+SELECT 
+  C.DIR_ID, 
+  C.PARENT_ID,
+  C.NAME,
+  C.TYPE,
+  M.TEXT,
+  M.ORDERID,
+  M.BESTELLUNG,
+  M.COMMENT,
+  M.PRODUCER,
+  M.SUPPLIER,
+  R.L,
+  R.B,
+  R.H
+FROM cte C
+LEFT JOIN MAT M ON C.NAME = M.NAME
+LEFT JOIN CMSRAWMAT R ON C.NAME = R.MATID
+WHERE TYPE = 100
